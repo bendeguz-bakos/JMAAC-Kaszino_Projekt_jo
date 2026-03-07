@@ -1,0 +1,23 @@
+<input type="number" id="penz">
+<button onclick="topUp()">topUp</button>
+
+<script>
+    async function topUp() {
+
+        const penz = Number(document.querySelector('#penz').value)
+        const userid = localStorage.getItem("userid")
+        const resp = await fetch(`http://localhost:3000/users/${userid}`)
+        const felhasznalo = await resp.json()
+
+        felhasznalo.balance = (felhasznalo.balance || 0) + penz
+
+        await fetch(`http://localhost:3000/users/${userid}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ balance: felhasznalo.balance })
+        })
+        alert('kesz')
+        console.log(felhasznalo)
+    }
+
+</script>

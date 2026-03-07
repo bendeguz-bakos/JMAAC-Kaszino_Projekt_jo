@@ -1,0 +1,40 @@
+<input type="text" id="nev">
+<input type="password" id="pswd">
+
+<button onclick=register()>Regisztacio</button>
+
+
+<script>
+    async function register() {
+        const nev = document.querySelector("#nev").value
+        const jelsz = document.querySelector("#pswd").value
+
+        const ujfelh = {
+            username: nev,
+            password: jelsz
+        }
+
+        const users = await fetch("http://localhost:3000/users");
+        const felhasznalok = await users.json();
+
+        const letezofelh = felhasznalok.find(u => u.username === nev)
+
+        if (letezofelh === undefined) {
+
+            const response = await fetch('http://localhost:3000/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ujfelh)
+            })
+
+            const ujUser = await response.json()
+
+            localStorage.setItem("userid", ujUser.id)
+
+            alert("Új felhasználó létrehozva")
+        } else {
+            alert('Már létezik ilyen nevű felhasználó')
+        }
+    }
+</script>
+}

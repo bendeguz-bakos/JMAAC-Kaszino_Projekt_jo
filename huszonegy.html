@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Félkarú-rabló</title>
+
+</head>
+
+<body>
+    <input type="number" id="tet" min="0">
+    <button onclick="start()">Játék</button>
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        async function start() {
+            const tet = document.getElementById('tet').value
+            console.log(tet)
+            localStorage.setItem("he_tet", tet)
+            if (!tet || tet <= 0) {
+                Swal.fire({
+                    title: 'Meg kell adnod a tetet!',
+                    text: 'Ird be a fogadasi osszeg',
+                    icon: 'warning',
+                    confirmButtonText: "Oke"
+                })
+            } else {
+                window.location.href = 'huszonegy_game.html'
+            }
+        }
+    </script>
+</body>
+
+</html>
