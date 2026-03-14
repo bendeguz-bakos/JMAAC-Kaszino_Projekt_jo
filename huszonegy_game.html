@@ -5,23 +5,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Huszonegy</title>
+    <link rel="stylesheet" href="huszonegy.css">
+
 </head>
 
+
+
 <body>
-
-
-
-    <div>
-        <button>Meg egy kartya</button>
-        <button>Alj</button>
+    <div class="felul">
+        <div id="kartyak_cpu">
+            <img src="./imgs/back.svg" alt="">
+            <img src="./imgs/back.svg" alt="">
+        </div>
     </div>
+
+
+
+    <div class="alul">
+        <div id="kartyak_user">
+
+        </div>
+        <div>
+            <button onclick="hit()">Meg egy kartyat</button>
+            <button>Alj</button>
+        </div>
+    </div>
+
+
+
     <script>
+
         function hit() {
+            // generate a random card number (1–52)
             let randomKartya = Math.floor(Math.random() * 52) + 1;
-            return randomKartya
+
+            // create a new image element
+            let newCard = document.createElement("img");
+
+            // set the image source (assuming you have images named kartya_1.svg ... kartya_52.svg)
+            newCard.src = `./imgs/kartya_${randomKartya}.svg`;
+
+            // optional: set max width or styling
+            newCard.style.maxWidth = "100px";
+            newCard.style.marginLeft = "5px"; // small spacing
+
+            // append the new card to the user container
+            document.getElementById("kartyak_user").appendChild(newCard);
         }
-        
-        
+
+
+
+
     </script>
 </body>
 

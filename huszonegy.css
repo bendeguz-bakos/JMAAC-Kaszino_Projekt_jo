@@ -1,0 +1,52 @@
+/* huszonegy.css */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.felul {
+    position: fixed;
+    /* stay at top */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    /* stack cards */
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    /* optional */
+}
+
+.felul img {
+    max-width: 100px;
+}
+
+.alul {
+    position: fixed;
+    /* stay at bottom */
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    /* cards above buttons */
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.alul img {
+    max-width: 100px;
+}
+
+.alul button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
