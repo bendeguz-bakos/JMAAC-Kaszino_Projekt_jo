@@ -1,10 +1,52 @@
 body {
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
+    background: #e6e6e6;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: #e6e6e6;
+}
+
+.input-container input {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.game-container {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #e6e6e6;
+}
+
+.play-button-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.retry-button-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.scratch.disabled {
+    pointer-events: none;
+    opacity: 0.6;
 }
 
 .cella {
@@ -20,8 +62,6 @@ body {
     background: white;
     overflow: hidden;
 
-    padding: 60px;
-    margin-bottom: 20px;
     cursor: pointer;
 }
 
@@ -42,7 +82,6 @@ body {
     grid-template-columns: repeat(3, 100px);
     grid-auto-rows: 100px;
     gap: 40px;
-    margin-bottom: auto;
 }
 
 

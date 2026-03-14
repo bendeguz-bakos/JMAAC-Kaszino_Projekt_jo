@@ -7,92 +7,200 @@
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="scratch.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
+
 <body>
-    <div class="scratch text-center p-5">
-        <!-- use auto-width columns and center the row so cells stay in the middle on narrow viewports -->
-        <div class="row justify-content-center">
-            <div class="col-auto cella"> <span class="prize"></span>
-                <div class="cover"></div>
-            </div>
-            <div class="col-auto cella"> <span class="prize"></span>
-                <div class="cover"></div>
-            </div>
-            <div class="col-auto cella"> <span class="prize"></span>
-                <div class="cover"></div>
-            </div>
+    <div class="input-container">
+        <input type="number" min="0" id="tet">
+    </div>
+    <div class="game-container">
+        <div class="play-button-container">
+            <button id="playButton" class="btn btn-primary btn-lg">Játék</button>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-auto cella"> <span class="prize"></span>
-                <div class="cover"></div>
-            </div>
-            <div class="col-auto cella"> <span class="prize"></span>
-                <div class="cover"></div>
-            </div>
-            <div class="col-auto cella"> <span class="prize"></span>
-                <div class="cover"></div>
-            </div>
+        <div class="retry-button-container" style="display: none;">
+            <button id="retryButton" class="btn btn-success btn-lg">Play Again</button>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-auto cella"> <span class="prize"></span>
+        <div class="scratch text-center p-5">
+
+            <div class="cella"> <span class="prize"></span>
                 <div class="cover"></div>
             </div>
-            <div class="col-auto cella"> <span class="prize"></span>
+            <div class="cella"> <span class="prize"></span>
                 <div class="cover"></div>
             </div>
-            <div class="col-auto cella"> <span class="prize"></span>
+            <div class="cella"> <span class="prize"></span>
+                <div class="cover"></div>
+            </div>
+            <div class="cella"> <span class="prize"></span>
+                <div class="cover"></div>
+            </div>
+            <div class="cella"> <span class="prize"></span>
+                <div class="cover"></div>
+            </div>
+            <div class="cella"> <span class="prize"></span>
+                <div class="cover"></div>
+            </div>
+            <div class="cella"> <span class="prize"></span>
+                <div class="cover"></div>
+            </div>
+            <div class="cella"> <span class="prize"></span>
+                <div class="cover"></div>
+            </div>
+            <div class="cella"> <span class="prize"></span>
                 <div class="cover"></div>
             </div>
         </div>
     </div>
     <script>
-        // initialize game: pick one random cell to hide a star
+
         document.addEventListener('DOMContentLoaded', () => {
-            const maxClicks = 3;
-            let clicks = 0;
-            const clickedCells = [];
+            // Temporary userid for testing
+            const userid = "1";
 
-            const cells = Array.from(document.querySelectorAll('.cella'));
-            const starIndex = Math.floor(Math.random() * cells.length);
-            const starCell = cells[starIndex];
-            const starSpan = starCell.querySelector('.prize');
-            if (starSpan) {
-                starSpan.textContent = '⭐';
-            } else {
-                const span = document.createElement('span');
-                span.className = 'prize';
-                span.textContent = '⭐';
-                starCell.appendChild(span);
-            }
+            const playButton = document.getElementById('playButton');
+            const retryButton = document.getElementById('retryButton');
+            const scratchContainer = document.querySelector('.scratch');
+            const playButtonContainer = document.querySelector('.play-button-container');
+            const retryButtonContainer = document.querySelector('.retry-button-container');
 
-            cells.forEach(cell => {
-                cell.addEventListener('click', () => {
-                    if (cell.classList.contains('clicked') || clicks >= maxClicks) {
-                        return;
+            // Initially disable the game
+            scratchContainer.classList.add('disabled');
+
+            // Play button click handler
+            playButton.addEventListener('click', () => {
+                // Hide play button
+                playButtonContainer.style.display = 'none';
+                // Hide retry button if visible
+                retryButtonContainer.style.display = 'none';
+
+                // Enable the game
+                scratchContainer.classList.remove('disabled');
+
+                // Initialize the game
+                initializeGame();
+            });
+
+            // Retry button click handler
+            retryButton.addEventListener('click', () => {
+                // Reset the game state
+                resetGame();
+                // Start new game
+                playButton.click();
+            });
+
+            function resetGame() {
+                // Clear all clicked cells
+                const cells = document.querySelectorAll('.cella');
+                cells.forEach(cell => {
+                    cell.classList.remove('clicked');
+                    // Re-add covers if they were removed
+                    if (!cell.querySelector('.cover')) {
+                        const cover = document.createElement('div');
+                        cover.className = 'cover';
+                        cell.appendChild(cover);
                     }
-
-                    clicks++;
-                    cell.classList.add('clicked');
-                    clickedCells.push(cell);
-
-                    const cover = cell.querySelector('.cover');
-                    if (cover) {
-                        cover.remove();
-                    }
-
-                    if (cell === starCell) {
-                        alert('You clicked the star!');
-                    }
-
-                    console.log(`Cell clicked (${clicks}/${maxClicks})`, cell);
-                    console.log('Cells so far:', clickedCells);
-
-                    if (clicks === maxClicks) {
-                        console.log('Maximum number of clicks reached');
+                    // Clear prizes
+                    const prize = cell.querySelector('.prize');
+                    if (prize) {
+                        prize.textContent = '';
                     }
                 });
-            });
+            }
+            function szorzo_szamlalo(kattintottak_db) {
+                if (kattintottak_db === 3) {
+                    return 1.25
+                } else if (kattintottak_db === 2) {
+                    return 1.50
+                } else if (kattintottak_db === 1) {
+                    return 2
+                } else {
+                    return 0
+                }
+            }
+
+            async function initializeGame() {
+                // Temporarily disabled API calls for testing
+                /*
+                const tet = document.querySelector("#tet").value
+                const res = await fetch(`http://localhost:3000/users/${userid}`);
+                const v_fiok = await res.json();
+                let ujbalance = v_fiok.balance - tet
+                await fetch(`http://localhost:3000/users/${userid}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ balance: ujbalance })
+                });
+                */
+
+                const maxClicks = 3;
+                let clicks = 0;
+                const clickedCells = [];
+                let gameEnded = false;
+
+                const cells = Array.from(document.querySelectorAll('.cella'));
+                const starIndex = Math.floor(Math.random() * cells.length);
+                const starCell = cells[starIndex];
+                const starSpan = starCell.querySelector('.prize');
+                if (starSpan) {
+                    starSpan.textContent = '⭐';
+                } else {
+                    const span = document.createElement('span');
+                    span.className = 'prize';
+                    span.textContent = '⭐';
+                    starCell.appendChild(span);
+                }
+
+                cells.forEach(cell => {
+                    cell.addEventListener('click', () => {
+                        if (cell.classList.contains('clicked') || clicks >= maxClicks || gameEnded) {
+                            return;
+                        }
+
+                        clicks++;
+                        cell.classList.add('clicked');
+                        clickedCells.push(cell);
+
+                        const cover = cell.querySelector('.cover');
+                        if (cover) {
+                            cover.remove();
+                        }
+
+                        if (cell === starCell) {
+
+                            showRetryButton();
+                            szorzo_szamlalo(clickedCells.length())
+                            setTimeout(() => {
+                                Swal.fire({
+                                    title: 'Eltaláltad!',
+                                    text: 'Ezzel pénzt nyertél',
+                                    icon: 'success',
+                                    confirmButtonText: "Tovább"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = "loginer.html";
+                                    }
+                                });;
+                            }, 1000); // 800ms delay to let user see the star
+                            return;
+                        }
+
+                        console.log(`Cell clicked (${clicks}/${maxClicks})`, cell);
+                        console.log('Cells so far:', clickedCells);
+
+                        if (clicks === maxClicks) {
+                            console.log('Maximum number of clicks reached');
+                            gameEnded = true;
+                            showRetryButton();
+                        }
+                    });
+                });
+            }
+
+            function showRetryButton() {
+                retryButtonContainer.style.display = 'block';
+            }
         });
     </script>
 </body>
