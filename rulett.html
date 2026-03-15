@@ -1,78 +1,85 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
-<meta charset="UTF-8">
-<title>Egyszerű Rulett</title>
-<style>
-  body {
-    text-align: center;
-    font-family: Arial;
-    background: #0b3d0b;
-    color: white;
-  }
-  button, input, select {
-    padding: 8px;
-    margin: 5px;
-    font-size: 16px;
-  }
-  #result {
-    margin-top: 20px;
-    font-size: 20px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Egyszerű Rulett</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial;
+      background: #0b3d0b;
+      color: white;
+    }
+
+    button,
+    input,
+    select {
+      padding: 8px;
+      margin: 5px;
+      font-size: 16px;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+  </style>
 </head>
+
 <body>
 
-<h1>🎰 Egyszerű Rulett</h1>
+  <h1>🎰 Egyszerű Rulett</h1>
 
-💰 Egyenleg: <span id="balance">1000</span> Ft
-<br>
+  💰 Egyenleg: <span id="balance">1000</span> Ft
+  <br>
 
-<input type="number" id="bet" placeholder="Tét (Ft)">
+  <input type="number" id="bet" placeholder="Tét (Ft)">
 
-<select id="colorChoice">
-  <option value="piros">Piros</option>
-  <option value="fekete">Fekete</option>
-</select>
+  <select id="colorChoice">
+    <option value="piros">Piros</option>
+    <option value="fekete">Fekete</option>
+  </select>
 
-<br>
+  <br>
 
-<button onclick="spin()">Pörgetés</button>
+  <button type="button" onclick="spin()">Pörgetés</button>
 
-<div id="result"></div>
+  <div id="result"></div>
 
-<script>
-let balance = 1000;
+  <script>
+    let balance = 1000;
 
-function spin() {
-  const red = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-  const number = Math.floor(Math.random() * 37);
-  const bet = Number(document.getElementById("bet").value);
-  const choice = document.getElementById("colorChoice").value;
+    function spin() {
+      const red = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+      const number = Math.floor(Math.random() * 37);
+      const bet = Number(document.getElementById("bet").value);
+      const choice = document.getElementById("colorChoice").value;
 
-  if (bet <= 0 || bet > balance) {
-    document.getElementById("result").innerHTML = "Hibás tét!";
-    return;
-  }
+      if (bet <= 0 || bet > balance) {
+        document.getElementById("result").innerHTML = "Hibás tét!";
+        return;
+      }
 
-  let color = "zöld";
-  if (number !== 0) {
-    color = red.includes(number) ? "piros" : "fekete";
-  }
+      let color = "zöld";
+      if (number !== 0) {
+        color = red.includes(number) ? "piros" : "fekete";
+      }
 
-  if (color === choice) {
-    balance += bet;
-    document.getElementById("result").innerHTML =
-      `Nyertél! Szám: ${number} (${color})`;
-  } else {
-    balance -= bet;
-    document.getElementById("result").innerHTML =
-      `Vesztettél! Szám: ${number} (${color})`;
-  }
+      if (color === choice) {
+        balance += bet;
+        document.getElementById("result").innerHTML =
+          `Nyertél! Szám: ${number} (${color})`;
+      } else {
+        balance -= bet;
+        document.getElementById("result").innerHTML =
+          `Vesztettél! Szám: ${number} (${color})`;
+      }
 
-  document.getElementById("balance").innerText = balance;
-}
-</script>
+      document.getElementById("balance").innerText = balance;
+    }
+  </script>
 
 </body>
+
 </html>
