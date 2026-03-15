@@ -69,7 +69,8 @@
             scratchContainer.classList.add('disabled');
 
             // Play button click handler
-            playButton.addEventListener('click', () => {
+            playButton.addEventListener('click', (event) => {
+                event.preventDefault();
                 const tetInput = document.getElementById('tet');
                 const tetValue = parseFloat(tetInput.value);
 
@@ -97,7 +98,8 @@
             });
 
             // Retry button click handler
-            retryButton.addEventListener('click', () => {
+            retryButton.addEventListener('click', (event) => {
+                event.preventDefault();
                 // Reset the game state
                 resetGame();
                 // Start new game

@@ -1,11 +1,12 @@
 <input type="text" id="nev">
 <input type="password" id="pswd">
 
-<button type="button" onclick="loginer()">login</button>
+<button type="button" onclick="loginer(event)">login</button>
 
 <a href="topup.html">topUp</a>
 <script>
-    async function loginer() {
+    async function loginer(event) {
+        event.preventDefault();
         const felhnev = document.querySelector('#nev').value;
         const felhjelsz = document.querySelector("#pswd").value;
 

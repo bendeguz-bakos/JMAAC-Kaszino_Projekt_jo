@@ -9,7 +9,7 @@
 
 <body>
     <input type="number" id="tet" min="0">
-    <button type="button" onclick="start()">Játék</button>
+    <button type="button" onclick="start(event)">Játék</button>
 
     <div>
         <span id="elso_kep">🇭🇺</span>
@@ -22,7 +22,8 @@
     <script>
         const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
         let spinning = false;
-        async function start() {
+        async function start(event) {
+            event.preventDefault();
 
             if (spinning) {
                 return;

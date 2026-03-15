@@ -1,11 +1,12 @@
 <input type="text" id="nev">
 <input type="password" id="pswd">
 
-<button type="button" onclick=register()>Regisztacio</button>
+<button type="button" onclick="register(event)">Regisztacio</button>
 
 
 <script>
-    async function register() {
+    async function register(event) {
+        event.preventDefault();
         const nev = document.querySelector("#nev").value
         const jelsz = document.querySelector("#pswd").value
 

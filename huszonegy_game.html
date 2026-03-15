@@ -26,7 +26,7 @@
 
         </div>
         <div>
-            <button type="button" onclick="hit()">Meg egy kartyat</button>
+            <button type="button" onclick="hit(event)">Meg egy kartyat</button>
             <button type="button">Alj</button>
         </div>
     </div>
@@ -35,7 +35,8 @@
 
     <script>
 
-        function hit() {
+        function hit(event) {
+            event.preventDefault();
             // generate a random card number (1–52)
             let randomKartya = Math.floor(Math.random() * 52) + 1;
 
