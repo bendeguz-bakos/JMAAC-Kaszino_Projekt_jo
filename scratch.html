@@ -56,8 +56,8 @@
     <script>
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Temporary userid for testing
-            const userid = "1";
+
+            const userid = localStorage.userid;
 
             const playButton = document.getElementById('playButton');
             const retryButton = document.getElementById('retryButton');
@@ -70,6 +70,20 @@
 
             // Play button click handler
             playButton.addEventListener('click', () => {
+                const tetInput = document.getElementById('tet');
+                const tetValue = parseFloat(tetInput.value);
+
+                // Validate the bet amount
+                if (!tetInput.value || isNaN(tetValue) || tetValue <= 0) {
+                    Swal.fire({
+                        title: 'Hiba!',
+                        text: 'Kérlek adj meg egy érvényes tét összeget (nagyobb mint 0)!',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
                 // Hide play button
                 playButtonContainer.style.display = 'none';
                 // Hide retry button if visible
@@ -121,8 +135,7 @@
             }
 
             async function initializeGame() {
-                // Temporarily disabled API calls for testing
-                /*
+
                 const tet = document.querySelector("#tet").value
                 const res = await fetch(`http://localhost:3000/users/${userid}`);
                 const v_fiok = await res.json();
@@ -132,7 +145,6 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ balance: ujbalance })
                 });
-                */
 
                 const maxClicks = 3;
                 let clicks = 0;
@@ -168,7 +180,8 @@
                         }
 
                         if (cell === starCell) {
-
+                            ujbalance = v_fiok.balance + (tet * szorzo_szamlalo())
+                            penzfeltoltes()
                             showRetryButton();
                             szorzo_szamlalo(clickedCells.length())
                             setTimeout(() => {
@@ -177,11 +190,7 @@
                                     text: 'Ezzel pénzt nyertél',
                                     icon: 'success',
                                     confirmButtonText: "Tovább"
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.href = "loginer.html";
-                                    }
-                                });;
+                                })
                             }, 1000); // 800ms delay to let user see the star
                             return;
                         }
@@ -201,7 +210,16 @@
             function showRetryButton() {
                 retryButtonContainer.style.display = 'block';
             }
-        });
+        })
+        async function penzfeltoltes(ujbalance) {
+
+            await fetch(`http://localhost:3000/users/${userid}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ balance: ujbalance })
+            });
+
+        };
     </script>
 </body>
 
