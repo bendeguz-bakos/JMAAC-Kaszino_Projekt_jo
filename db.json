@@ -48,6 +48,12 @@
       "username": "fogarasi",
       "password": "benibeni",
       "balance": 9150
+    },
+    {
+      "id": "b7c7",
+      "username": "ksb",
+      "password": "asdasd",
+      "balance": 205
     }
   ]
 }
