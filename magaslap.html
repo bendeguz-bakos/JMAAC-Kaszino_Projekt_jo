@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kocka</title>
+    <link rel="stylesheet" href="dashboard(5).css">
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="sidebar">
+            <h2>Adatlap</h2>
+            <p id="nev"></p>
+            <p id="egyenleg"></p>
+            <button type="button" onclick="window.location.href='dashboard.html'">Vissza</button>
+            <button type="button" onclick="logout()">Kijelentkezes</button>
+        </div>
+
+        <div id="content">
+            <h1>Jatek</h1>
+
+            <div class="card" style="max-width: 350px;">
+                <p>Tét:</p>
+                <input type="number" id="tet" min="0" placeholder="Fogadás összege">
+                <p>Hanyas lesz a kartya:</p>
+                <input type="number" id="tippertek" min="1" max="9" placeholder="Fogadás összege">
+
+
+
+                <button onclick="jatek()" style="margin-top: 15px; width: 100%;" type="button">Tipp</button>
+            </div>
+
+            <div id="eredmeny_box" class="card" style="max-width: 350px; margin-top: 20px; display: none;">
+                <p id="kocka_eredmeny" style="font-size: 48px; text-align: center;"></p>
+                <p id="szoveg_eredmeny" style="text-align: center; margin-top: 8px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const _WebSocket = window.WebSocket
+        window.WebSocket = function (...args) {
+            const ws = new _WebSocket(...args)
+            ws.addEventListener('message', e => {
+                if (e.data.includes('reload')) e.stopImmediatePropagation()
+            })
+            return ws
+        }
+        const userid = localStorage.getItem("userid")
+
+
+        document.addEventListener("DOMContentLoaded", betolets)
+
+        async function betolets() {
+            if (!userid) return
+            const resp = await fetch(`http://localhost:3000/users/${userid}`)
+            const user = await resp.json()
+            document.getElementById('nev').textContent = user.username
+            document.getElementById('egyenleg').textContent = user.balance + ' Ft'
+        }
+
+        function logout() {
+            localStorage.removeItem("userid")
+            window.location.href = "landingpage.html"
+        }
+
+        async function jatek() {
+            const tet = parseInt(document.getElementById('tet').value)
+            const tipp = parseInt(document.getElementById('tipp').value)
+
+            if (!tet || tet <= 0) {
+                Swal.fire({ title: 'Add meg a tétet!', icon: 'warning', confirmButtonText: 'Oké' })
+                return
+            }
+            if (!tipp || tipp < 1 || tipp > 9) {
+                Swal.fire({ title: 'Ervenytelen tipp', icon: 'warning', confirmButtonText: 'Oké' })
+                return
+            }
+            const kettes = [11, 12, 13, 14]
+            const harmas = [15, 16, 17, 18]
+            const negyes = [19, 20, 21, 22]
+            const otos = [23, 24, 25, 26]
+            const hatos = [27, 28, 29, 30]
+            const hetes = [31, 32, 33, 34]
+            const nyolcas = [35, 36, 37, 38]
+            const kilences = [39, 40, 41, 42]
+            const kivalasztott_kartya =
+
+            const res = await fetch(`http://localhost:3000/users/${userid}`)
+            const user = await res.json()
+
+            const ujbalance = user.balance - tet
+            const nyeresszorzo = 10 - tipp
+
+            await fetch(`http://localhost:3000/users/${userid}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ balance: ujbalance })
+            })
+        }
+    </script>
+</body>
+
+</html>
