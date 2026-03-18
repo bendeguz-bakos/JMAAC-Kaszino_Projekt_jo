@@ -48,6 +48,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
+    const _WebSocket = window.WebSocket
+    window.WebSocket = function (...args) {
+      const ws = new _WebSocket(...args)
+      ws.addEventListener('message', e => {
+        if (e.data.includes('reload')) e.stopImmediatePropagation()
+      })
+      return ws
+    }
     const userid = localStorage.getItem("userid")
     let valasztott = null
 
