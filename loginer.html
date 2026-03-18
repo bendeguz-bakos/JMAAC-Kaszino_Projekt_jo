@@ -1,27 +1,49 @@
-<input type="text" id="nev">
-<input type="password" id="pswd">
+<!DOCTYPE html>
+<html lang="en">
 
-<button type="button" onclick="loginer(event)">login</button>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="login_reg.css">
+</head>
 
-<a href="topup.html">topUp</a>
-<script>
-    async function loginer(event) {
-        event.preventDefault();
-        const felhnev = document.querySelector('#nev').value;
-        const felhjelsz = document.querySelector("#pswd").value;
+<body>
+    <div id="box">
+        <h2>Bejelentkezes</h2>
+        <input type="text" id="nev" placeholder="Felhasznalonev">
+        <input type="password" id="pswd" placeholder="Jelszo">
+        <button type="button" onclick="loginer(event)">Login</button>
+        <a href="register.html">Meg nincs fiokod? Regisztracio</a>
+    </div>
 
-        const users = await fetch("http://localhost:3000/users");
-        const felhasznalok = await users.json();
-
-        const user = felhasznalok.find(u => u.username === felhnev && u.password === felhjelsz);
-
-        if (user) {
-            localStorage.setItem("userid", user.id)
-            alert("sikeres bejelentkezes")
-        } else {
-            alert("Hibás felhasználónév vagy jelszó!");
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function loginer(event) {
+            event.preventDefault();
+            const felhnev = document.querySelector('#nev').value;
+            const felhjelsz = document.querySelector("#pswd").value;
+            const users = await fetch("http://localhost:3000/users");
+            const felhasznalok = await users.json();
+            const user = felhasznalok.find(u => u.username === felhnev && u.password === felhjelsz);
+            if (user) {
+                localStorage.setItem("userid", user.id)
+                Swal.fire({
+                    title: 'Sikeres bejelentkezes!',
+                    icon: 'success',
+                    confirmButtonText: 'Tovabb'
+                }).then(() => {
+                    window.location.href = 'dashboard.html'
+                })
+            } else {
+                Swal.fire({
+                    title: 'Hiba!',
+                    text: 'Hibás felhasználónév vagy jelszó!',
+                    icon: 'error',
+                    confirmButtonText: 'Újra'
+                })
+            }
         }
+    </script>
+</body>
 
-    }
-</script>
-}
+</html>

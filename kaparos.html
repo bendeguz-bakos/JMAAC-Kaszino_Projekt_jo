@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaparós</title>
+    <link rel="stylesheet" href="dashboard(5).css">
+    <style>
+        #scratch-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 80px);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .cella {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+        }
+
+        .cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #1e293b;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .cella.clicked .cover {
+            display: none;
+        }
+
+        #scratch-grid.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="sidebar">
+            <h2>Adatlap</h2>
+            <p id="nev"></p>
+            <p id="egyenleg"></p>
+            <button type="button" onclick="window.location.href='dashboard.html'">Vissza</button>
+            <button type="button" onclick="logout()">Kijelentkezes</button>
+        </div>
+
+        <div id="content">
+            <h1>Kaparós</h1>
+
+            <div class="card" style="max-width: 360px;">
+                <p>Tét:</p>
+                <input type="number" min="0" id="tet" placeholder="Fogadás összege">
+                <button id="playButton" onclick="play()" style="margin-top: 10px; width: 100%;"
+                    type="button">Játék</button>
+                <button id="retryButton" onclick="retry()" style="margin-top: 10px; width: 100%; display: none;"
+                    type="button">Újra</button>
+
+                <div id="scratch-grid" class="disabled">
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                    <div class="cella"><span class="prize"></span>
+                        <div class="cover">?</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const userid = localStorage.getItem("userid")
+
+        document.addEventListener("DOMContentLoaded", betolets)
+
+        async function betolets() {
+            if (!userid) return
+            const resp = await fetch(`http://localhost:3000/users/${userid}`)
+            const user = await resp.json()
+            document.getElementById('nev').textContent = user.username
+            document.getElementById('egyenleg').textContent = user.balance + ' Ft'
+        }
+
+        function logout() {
+            localStorage.removeItem("userid")
+            window.location.href = "landingpage.html"
+        }
+
+        function szorzo_szamlalo(kattintottak_db) {
+            if (kattintottak_db === 3) return 1.25
+            else if (kattintottak_db === 2) return 1.50
+            else if (kattintottak_db === 1) return 2
+            else return 0
+        }
+
+        async function play() {
+            const tetInput = document.getElementById('tet')
+            const tetValue = parseFloat(tetInput.value)
+
+            if (!tetInput.value || isNaN(tetValue) || tetValue <= 0) {
+                Swal.fire({ title: 'Hiba!', text: 'Kérlek adj meg egy érvényes tét összeget!', icon: 'error', confirmButtonText: 'OK' })
+                return
+            }
+
+            document.getElementById('playButton').style.display = 'none'
+            document.getElementById('retryButton').style.display = 'none'
+
+            const scratchGrid = document.getElementById('scratch-grid')
+            scratchGrid.classList.remove('disabled')
+
+            const res = await fetch(`http://localhost:3000/users/${userid}`)
+            const v_fiok = await res.json()
+            let ujbalance = v_fiok.balance - tetValue
+
+            await fetch(`http://localhost:3000/users/${userid}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ balance: ujbalance })
+            })
+
+            document.getElementById('egyenleg').textContent = ujbalance + ' Ft'
+
+            const maxClicks = 3
+            let clicks = 0
+            let gameEnded = false
+
+            const cells = Array.from(document.querySelectorAll('.cella'))
+            const starIndex = Math.floor(Math.random() * cells.length)
+            const starCell = cells[starIndex]
+            starCell.querySelector('.prize').textContent = '⭐'
+
+            cells.forEach(cell => {
+                cell.addEventListener('click', async () => {
+                    if (cell.classList.contains('clicked') || clicks >= maxClicks || gameEnded) return
+
+                    clicks++
+                    cell.classList.add('clicked')
+
+                    if (cell === starCell) {
+                        gameEnded = true
+                        const nyert = tetValue * szorzo_szamlalo(clicks)
+                        const uj = ujbalance + nyert
+                        await fetch(`http://localhost:3000/users/${userid}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ balance: uj })
+                        })
+                        document.getElementById('egyenleg').textContent = uj + ' Ft'
+                        document.getElementById('retryButton').style.display = 'block'
+                        scratchGrid.classList.add('disabled')
+                        setTimeout(() => {
+                            Swal.fire({ title: 'Eltaláltad!', text: `+${nyert} Ft`, icon: 'success', confirmButtonText: 'Tovább' })
+                        }, 500)
+                        return
+                    }
+
+                    if (clicks === maxClicks) {
+                        gameEnded = true
+                        scratchGrid.classList.add('disabled')
+                        document.getElementById('retryButton').style.display = 'block'
+                        setTimeout(() => {
+                            Swal.fire({ title: 'Nem találtad el!', text: 'Nem volt ott a csillag', icon: 'error', confirmButtonText: 'Újra' })
+                        }, 300)
+                    }
+                })
+            })
+        }
+
+        function retry() {
+            const cells = document.querySelectorAll('.cella')
+            cells.forEach(cell => {
+                cell.classList.remove('clicked')
+                cell.querySelector('.prize').textContent = ''
+                if (!cell.querySelector('.cover')) {
+                    const cover = document.createElement('div')
+                    cover.className = 'cover'
+                    cover.textContent = '?'
+                    cell.appendChild(cover)
+                } else {
+                    cell.querySelector('.cover').style.display = 'flex'
+                }
+            })
+            document.getElementById('retryButton').style.display = 'none'
+            document.getElementById('playButton').style.display = 'block'
+            document.getElementById('scratch-grid').classList.add('disabled')
+            document.getElementById('tet').value = ''
+        }
+    </script>
+</body>
+
+</html>

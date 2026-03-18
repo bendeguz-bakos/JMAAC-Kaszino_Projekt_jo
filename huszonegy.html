@@ -4,22 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Félkarú-rabló</title>
-
+    <title>Huszonegy</title>
+    <link rel="stylesheet" href="dashboard(5).css">
 </head>
 
 <body>
-    <input type="number" id="tet" min="0">
-    <button type="button" onclick="start(event)">Játék</button>
+    <div id="wrapper">
+        <div id="sidebar">
+            <h2>Adatlap</h2>
+            <p id="nev"></p>
+            <p id="egyenleg"></p>
+            <button type="button" onclick="window.location.href='dashboard.html'">Vissza</button>
+            <button type="button" onclick="logout()">Kijelentkezes</button>
+        </div>
 
-
+        <div id="content">
+            <h1>Huszonegy</h1>
+            <div class="card" style="max-width: 300px;">
+                <p style="margin-bottom: 10px;">Add meg a téted:</p>
+                <input type="number" id="tet" min="0" placeholder="Tét összege">
+                <button onclick="start()" style="margin-top: 10px; width: 100%;" type="button">Játék</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
-        async function start(event) {
+        const userid = localStorage.getItem("userid")
+
+        document.addEventListener("DOMContentLoaded", betolets)
+
+        async function betolets() {
+            if (!userid) return
+            const resp = await fetch(`http://localhost:3000/users/${userid}`)
+            const user = await resp.json()
+            document.getElementById('nev').textContent = user.username
+            document.getElementById('egyenleg').textContent = user.balance + ' Ft'
+        }
+
+        function logout() {
+            localStorage.removeItem("userid")
+            window.location.href = "landingpage.html"
+        }
+
+        async function start() {
             event.preventDefault();
             const tet = document.getElementById('tet').value
+            const res = await fetch(`http://localhost:3000/users/${userid}`);
+            const v_fiok = await res.json();
+            let ujbalance = v_fiok.balance - tet
+            await fetch(`http://localhost:3000/users/${userid}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ balance: ujbalance })
+            });
             console.log(tet)
             localStorage.setItem("he_tet", tet)
             if (!tet || tet <= 0) {

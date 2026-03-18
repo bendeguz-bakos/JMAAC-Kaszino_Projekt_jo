@@ -1,86 +1,126 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <title>Egyszerű Rulett</title>
-  <style>
-    body {
-      text-align: center;
-      font-family: Arial;
-      background: #0b3d0b;
-      color: white;
-    }
-
-    button,
-    input,
-    select {
-      padding: 8px;
-      margin: 5px;
-      font-size: 16px;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 20px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rulett</title>
+  <link rel="stylesheet" href="dashboard(5).css">
+  <link rel="stylesheet" href="rulett.css">
 </head>
 
 <body>
+  <div id="wrapper">
+    <div id="sidebar">
+      <h2>Adatlap</h2>
+      <p id="nev"></p>
+      <p id="egyenleg"></p>
+      <button type="button" onclick="window.location.href='dashboard.html'">Vissza</button>
+      <button type="button" onclick="logout()">Kijelentkezes</button>
+    </div>
 
-  <h1>🎰 Egyszerű Rulett</h1>
+    <div id="content">
+      <h1>Rulett</h1>
 
-  💰 Egyenleg: <span id="balance">1000</span> Ft
-  <br>
+      <div class="card" style="max-width: 400px;">
+        <p>Tét:</p>
+        <input type="number" id="tet" min="0" placeholder="Fogadás összege">
 
-  <input type="number" id="bet" placeholder="Tét (Ft)">
+        <p style="margin-top: 15px;">Mire fogadsz?</p>
+        <div id="fogadas_gombok">
+          <button class="fogadas-btn" onclick="valaszt('piros')">🔴 Piros</button>
+          <button class="fogadas-btn" onclick="valaszt('fekete')">⚫ Fekete</button>
+          <button class="fogadas-btn" onclick="valaszt('paros')">Páros</button>
+          <button class="fogadas-btn" onclick="valaszt('paratlan')">Páratlan</button>
+        </div>
 
-  <select id="colorChoice">
-    <option value="piros">Piros</option>
-    <option value="fekete">Fekete</option>
-  </select>
+        <p id="valasztott" style="margin-top: 10px; color: #94a3b8; font-size: 13px;"></p>
 
-  <br>
+        <button id="jatekgomb" onclick="jatek()" style="margin-top: 15px; width: 100%;" type="button">Pörgetés</button>
+      </div>
 
-  <button type="button" onclick="spin(event)">Pörgetés</button>
+      <div id="eredmeny_box" class="card" style="max-width: 400px; margin-top: 20px; display: none;">
+        <p id="szam_eredmeny" style="font-size: 28px; font-weight: bold; text-align: center;"></p>
+        <p id="szoveg_eredmeny" style="text-align: center; margin-top: 8px;"></p>
+      </div>
+    </div>
+  </div>
 
-  <div id="result"></div>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    let balance = 1000;
+    const userid = localStorage.getItem("userid")
+    let valasztott = null
 
-    function spin(event) {
-      event.preventDefault();
-      const red = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-      const number = Math.floor(Math.random() * 37);
-      const bet = Number(document.getElementById("bet").value);
-      const choice = document.getElementById("colorChoice").value;
+    document.addEventListener("DOMContentLoaded", betolets)
 
-      if (bet <= 0 || bet > balance) {
-        document.getElementById("result").innerHTML = "Hibás tét!";
-        return;
+    async function betolets() {
+      if (!userid) return
+      const resp = await fetch(`http://localhost:3000/users/${userid}`)
+      const user = await resp.json()
+      document.getElementById('nev').textContent = user.username
+      document.getElementById('egyenleg').textContent = user.balance + ' Ft'
+    }
+
+    function logout() {
+      localStorage.removeItem("userid")
+      window.location.href = "landingpage.html"
+    }
+
+    function valaszt(tipus) {
+      valasztott = tipus
+      document.getElementById('valasztott').textContent = 'Választva: ' + tipus
+      document.querySelectorAll('.fogadas-btn').forEach(b => b.style.background = '#334155')
+      event.target.style.background = '#475569'
+    }
+
+    async function jatek() {
+      const tet = parseInt(document.getElementById('tet').value)
+
+      if (!tet || tet <= 0) {
+        Swal.fire({ title: 'Add meg a tétet!', icon: 'warning', confirmButtonText: 'Oké' })
+        return
+      }
+      if (!valasztott) {
+        Swal.fire({ title: 'Válassz valamire!', icon: 'warning', confirmButtonText: 'Oké' })
+        return
       }
 
-      let color = "zöld";
-      if (number !== 0) {
-        color = red.includes(number) ? "piros" : "fekete";
+      const res = await fetch(`http://localhost:3000/users/${userid}`)
+      const user = await res.json()
+
+      if (tet > user.balance) {
+        Swal.fire({ title: 'Nincs elég egyenleged!', icon: 'error', confirmButtonText: 'Oké' })
+        return
       }
 
-      if (color === choice) {
-        balance += bet;
-        document.getElementById("result").innerHTML =
-          `Nyertél! Szám: ${number} (${color})`;
-      } else {
-        balance -= bet;
-        document.getElementById("result").innerHTML =
-          `Vesztettél! Szám: ${number} (${color})`;
-      }
+      const szam = Math.floor(Math.random() * 37)
+      const piros = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]
+      const szine = szam === 0 ? 'zold' : piros.includes(szam) ? 'piros' : 'fekete'
+      const parossag = szam === 0 ? 'paratlan' : szam % 2 === 0 ? 'paros' : 'paratlan'
 
-      document.getElementById("balance").innerText = balance;
+      let nyert = false
+      if (valasztott === 'piros' && szine === 'piros') nyert = true
+      if (valasztott === 'fekete' && szine === 'fekete') nyert = true
+      if (valasztott === 'paros' && parossag === 'paros') nyert = true
+      if (valasztott === 'paratlan' && parossag === 'paratlan') nyert = true
+
+      let ujbalance = nyert ? user.balance + tet : user.balance - tet
+
+      await fetch(`http://localhost:3000/users/${userid}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ balance: ujbalance })
+      })
+
+      document.getElementById('egyenleg').textContent = ujbalance + ' Ft'
+
+      const eredmenyBox = document.getElementById('eredmeny_box')
+      eredmenyBox.style.display = 'block'
+      document.getElementById('szam_eredmeny').textContent = szam + ' — ' + szine + ', ' + parossag
+      document.getElementById('szoveg_eredmeny').textContent = nyert ? '🎉 Nyertél! +' + tet + ' Ft' : '😞 Vesztettél! -' + tet + ' Ft'
+      document.getElementById('szoveg_eredmeny').style.color = nyert ? 'green' : 'red'
     }
   </script>
-
 </body>
 
 </html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kocka</title>
+    <link rel="stylesheet" href="dashboard(5).css">
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="sidebar">
+            <h2>Adatlap</h2>
+            <p id="nev"></p>
+            <p id="egyenleg"></p>
+            <button type="button" onclick="window.location.href='dashboard.html'">Vissza</button>
+            <button type="button" onclick="logout()">Kijelentkezes</button>
+        </div>
+
+        <div id="content">
+            <h1>Kocka</h1>
+
+            <div class="card" style="max-width: 350px;">
+                <p>Tét:</p>
+                <input type="number" id="tet" min="0" placeholder="Fogadás összege">
+
+                <p style="margin-top: 15px;">Tippeld meg a számot (1-6):</p>
+                <input type="number" id="tipp" min="1" max="6" placeholder="1 - 6">
+
+                <button onclick="dob()" style="margin-top: 15px; width: 100%;" type="button">Dobás</button>
+            </div>
+
+            <div id="eredmeny_box" class="card" style="max-width: 350px; margin-top: 20px; display: none;">
+                <p id="kocka_eredmeny" style="font-size: 48px; text-align: center;"></p>
+                <p id="szoveg_eredmeny" style="text-align: center; margin-top: 8px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const userid = localStorage.getItem("userid")
+        const faces = { 1: "⚀", 2: "⚁", 3: "⚂", 4: "⚃", 5: "⚄", 6: "⚅" }
+
+        document.addEventListener("DOMContentLoaded", betolets)
+
+        async function betolets() {
+            if (!userid) return
+            const resp = await fetch(`http://localhost:3000/users/${userid}`)
+            const user = await resp.json()
+            document.getElementById('nev').textContent = user.username
+            document.getElementById('egyenleg').textContent = user.balance + ' Ft'
+        }
+
+        function logout() {
+            localStorage.removeItem("userid")
+            window.location.href = "landingpage.html"
+        }
+
+        async function dob() {
+            const tet = parseInt(document.getElementById('tet').value)
+            const tipp = parseInt(document.getElementById('tipp').value)
+
+            if (!tet || tet <= 0) {
+                Swal.fire({ title: 'Add meg a tétet!', icon: 'warning', confirmButtonText: 'Oké' })
+                return
+            }
+            if (!tipp || tipp < 1 || tipp > 6) {
+                Swal.fire({ title: 'Adj meg egy számot 1 és 6 között!', icon: 'warning', confirmButtonText: 'Oké' })
+                return
+            }
+
+            const res = await fetch(`http://localhost:3000/users/${userid}`)
+            const user = await res.json()
+
+            if (tet > user.balance) {
+                Swal.fire({ title: 'Nincs elég egyenleged!', icon: 'error', confirmButtonText: 'Oké' })
+                return
+            }
+
+            const dobas = Math.floor(Math.random() * 6) + 1
+            const nyert = dobas === tipp
+
+            const ujbalance = nyert ? user.balance + tet * 5 : user.balance - tet
+
+            await fetch(`http://localhost:3000/users/${userid}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ balance: ujbalance })
+            })
+
+            document.getElementById('egyenleg').textContent = ujbalance + ' Ft'
+
+            const box = document.getElementById('eredmeny_box')
+            box.style.display = 'block'
+            document.getElementById('kocka_eredmeny').textContent = faces[dobas]
+            const szoveg = document.getElementById('szoveg_eredmeny')
+            szoveg.textContent = nyert ? 'Eltaláltad! +' + (tet * 5) + ' Ft' : 'Nem találtad el! -' + tet + ' Ft'
+            szoveg.style.color = nyert ? 'green' : 'red'
+        }
+    </script>
+</body>
+
+</html>

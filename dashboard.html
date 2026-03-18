@@ -1,11 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="dashboard(5).css">
 </head>
+
 <body>
-    
+    <div id="wrapper">
+        <div id="sidebar">
+            <h2>Adatlap</h2>
+            <p id="nev"></p>
+            <p id="egyenleg"></p>
+            <button onclick="window.location.href='topup.html'">Penzfeltoltes</button>
+            <button onclick="torles()">Torles</button>
+            <button onclick="logout()">Kijelentkezes</button>
+        </div>
+
+        <div id="content">
+            <h1>Jatekok</h1>
+            <div id="cards">
+                <div class="card" onclick="window.location.href='felkarurablo.html'">🎰<br>Felkarurablo</div>
+                <div class="card" onclick="window.location.href='huszonegy.html'">🃏<br>Huszonegy</div>
+                <div class="card" onclick="window.location.href='kaparos.html'">🎟️<br>Kaparos</div>
+                <div class="card" onclick="window.location.href='rulett.html'">🎡<br>Rulett</div>
+                <div class="card" onclick="window.location.href='kocka.html'">🎲<br>Kocka</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            betolets();
+        });
+
+        function logout() {
+            localStorage.removeItem("userid");
+            window.location.href = "landingpage.html";
+        }
+
+        async function betolets() {
+            const userid = localStorage.getItem("userid");
+            if (!userid) return;
+            const resp = await fetch(`http://localhost:3000/users/${userid}`);
+            const felhasznalo = await resp.json();
+            document.getElementById('nev').innerHTML = felhasznalo.username;
+            document.getElementById('egyenleg').innerHTML = felhasznalo.balance + ' Ft';
+        }
+
+        function torles() {
+            window.location.href = "torles.html";
+        }
+    </script>
 </body>
+
 </html>

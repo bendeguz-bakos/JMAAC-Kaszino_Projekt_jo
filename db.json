@@ -54,6 +54,17 @@
       "username": "ksb",
       "password": "asdasd",
       "balance": 205
+    },
+    {
+      "id": "3fbb",
+      "username": "teszteles",
+      "password": "1234"
+    },
+    {
+      "id": "7754",
+      "username": "Bendeg",
+      "password": "Bende",
+      "balance": 330
     }
   ]
 }

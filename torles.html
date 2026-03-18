@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiok torles</title>
+    <link rel="stylesheet" href="torles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Fiok torles</h1>
+            <p>Ez visszafordithatatlan!</p>
+            <p>Nem all modunkban a feltoltott penzt visszautalni</p>
+            <button onclick="deleteit()">Fiok torles</button>
+
+        </div>
+    </div>
+
+    <script>
+        async function deleteit() {
+            const userid = localStorage.getItem("userid")
+            if (!confirm("Biztos hogy torolni akarod a fiokodat?")) return;
+
+            fetch(`http://localhost:3000/users/${userid}`, {
+                method: "DELETE"
+            })
+            localStorage.removeItem('userid')
+            window.location.href = 'landingpage.html'
+
+        }
+    </script>
+</body>
+
+</html>

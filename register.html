@@ -1,41 +1,60 @@
-<input type="text" id="nev">
-<input type="password" id="pswd">
+<!DOCTYPE html>
+<html lang="en">
 
-<button type="button" onclick="register(event)">Regisztacio</button>
+<head>
+    <meta charset="UTF-8">
+    <title>Regisztracio</title>
+    <link rel="stylesheet" href="login_reg.css">
+</head>
 
+<body>
+    <div id="box">
+        <h2>Regisztracio</h2>
+        <input type="text" id="nev" placeholder="Felhasznalonev">
+        <input type="password" id="pswd" placeholder="Jelszo">
+        <button type="button" onclick="register(event)">Regisztracio</button>
+        <a href="loginer.html">Mar van fiokod? Bejelentkezes</a>
+    </div>
 
-<script>
-    async function register(event) {
-        event.preventDefault();
-        const nev = document.querySelector("#nev").value
-        const jelsz = document.querySelector("#pswd").value
-
-        const ujfelh = {
-            username: nev,
-            password: jelsz
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function register(event) {
+            event.preventDefault();
+            const nev = document.querySelector("#nev").value
+            const jelsz = document.querySelector("#pswd").value
+            const ujfelh = {
+                username: nev,
+                password: jelsz
+            }
+            const users = await fetch("http://localhost:3000/users");
+            const felhasznalok = await users.json();
+            const letezofelh = felhasznalok.find(u => u.username === nev)
+            if (letezofelh === undefined) {
+                const response = await fetch('http://localhost:3000/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ujfelh)
+                })
+                const ujUser = await response.json()
+                localStorage.setItem("userid", ujUser.id)
+                Swal.fire({
+                    title: 'Siker!',
+                    text: 'Új felhasználó létrehozva',
+                    icon: 'success',
+                    confirmButtonText: 'Tovabb'
+                }).then(() => {
+                    window.location.href = 'dashboard.html'
+                })
+            } else {
+                Swal.fire({
+                    title: 'Hiba!',
+                    text: 'Már létezik ilyen nevű felhasználó',
+                    icon: 'error',
+                    confirmButtonText: 'Újra'
+                })
+            }
         }
+    </script>
+</body>
 
-        const users = await fetch("http://localhost:3000/users");
-        const felhasznalok = await users.json();
-
-        const letezofelh = felhasznalok.find(u => u.username === nev)
-
-        if (letezofelh === undefined) {
-
-            const response = await fetch('http://localhost:3000/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(ujfelh)
-            })
-
-            const ujUser = await response.json()
-
-            localStorage.setItem("userid", ujUser.id)
-
-            alert("Új felhasználó létrehozva")
-        } else {
-            alert('Már létezik ilyen nevű felhasználó')
-        }
-    }
-</script>
-}
+</html>

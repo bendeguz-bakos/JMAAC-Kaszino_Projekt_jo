@@ -1,0 +1,149 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+}
+
+#wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+#sidebar {
+    width: 200px;
+    background: #1e293b;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+#sidebar h2 {
+    margin: 0 0 10px 0;
+}
+
+#sidebar p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+#sidebar button {
+    padding: 8px;
+    background: #334155;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    text-align: left;
+}
+
+#sidebar button:hover {
+    background: #475569;
+}
+
+/* Main content */
+#content {
+    padding: 30px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#content h1 {
+    margin: 0 0 24px 0;
+}
+
+/* Game cards grid */
+#cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 40px 20px;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    color: #1e293b;
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.card:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    transform: translateY(-3px);
+}
+.card button {
+    padding: 10px;
+    background: #1e293b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.card button:hover {
+    background: #334155;
+}
+
+.card input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.card p {
+    font-weight: normal;
+    font-size: 14px;
+    color: #1e293b;
+    text-align: left;
+}
+.card button {
+    padding: 10px;
+    background: #1e293b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.card button:hover {
+    background: #334155;
+}
+
+.card input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.card p {
+    font-weight: normal;
+    font-size: 14px;
+    color: #1e293b;
+    text-align: left;
+}

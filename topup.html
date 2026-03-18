@@ -1,23 +1,66 @@
-<input type="number" id="penz">
-<button onclick="topUp()">topUp</button>
+<!DOCTYPE html>
+<html lang="en">
 
-<script>
-    async function topUp() {
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pénzfeltöltés</title>
+    <link rel="stylesheet" href="dashboard(5).css">
+</head>
 
-        const penz = Number(document.querySelector('#penz').value)
-        const userid = localStorage.getItem("userid")
-        const resp = await fetch(`http://localhost:3000/users/${userid}`)
-        const felhasznalo = await resp.json()
+<body>
+    <div id="wrapper">
+        <div id="sidebar">
+            <h2>Adatlap</h2>
+            <p id="nev"></p>
+            <p id="egyenleg"></p>
+            <button onclick="window.location.href='dashboard.html'">Vissza</button>
+            <button onclick="logout()">Kijelentkezes</button>
+        </div>
 
-        felhasznalo.balance = (felhasznalo.balance || 0) + penz
+        <div id="content">
+            <h1>Pénzfeltöltés</h1>
+            <div class="card" style="max-width: 320px;">
+                <p>Feltöltendő összeg:</p>
+                <input type="number" id="penz" placeholder="Összeg (Ft)" style="margin-top: 8px;">
+                <button onclick="topUp()" style="margin-top: 10px; width: 100%;">Feltöltés</button>
+            </div>
+        </div>
+    </div>
 
-        await fetch(`http://localhost:3000/users/${userid}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ balance: felhasznalo.balance })
-        })
-        alert('kesz')
-        console.log(felhasznalo)
-    }
+    <script>
+        document.addEventListener("DOMContentLoaded", betolets)
 
-</script>
+        async function betolets() {
+            const userid = localStorage.getItem("userid")
+            if (!userid) return
+            const resp = await fetch(`http://localhost:3000/users/${userid}`)
+            const felhasznalo = await resp.json()
+            document.getElementById('nev').textContent = felhasznalo.username
+            document.getElementById('egyenleg').textContent = felhasznalo.balance + ' Ft'
+        }
+
+        function logout() {
+            localStorage.removeItem("userid")
+            window.location.href = "landingpage.html"
+        }
+
+        async function topUp() {
+            const penz = Number(document.querySelector('#penz').value)
+            const userid = localStorage.getItem("userid")
+            const resp = await fetch(`http://localhost:3000/users/${userid}`)
+            const felhasznalo = await resp.json()
+            felhasznalo.balance = (felhasznalo.balance || 0) + penz
+            await fetch(`http://localhost:3000/users/${userid}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ balance: felhasznalo.balance })
+            })
+            alert('kesz')
+            document.getElementById('egyenleg').textContent = felhasznalo.balance + ' Ft'
+            console.log(felhasznalo)
+        }
+    </script>
+</body>
+
+</html>
