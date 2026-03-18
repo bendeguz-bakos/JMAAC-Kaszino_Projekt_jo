@@ -135,9 +135,9 @@
         }
 
         function szorzo_szamlalo(kattintottak_db) {
-            if (kattintottak_db === 3) return 1.25
-            else if (kattintottak_db === 2) return 1.50
-            else if (kattintottak_db === 1) return 2
+            if (kattintottak_db === 3) return 1.5
+            else if (kattintottak_db === 2) return 2
+            else if (kattintottak_db === 1) return 3
             else return 0
         }
 
@@ -219,14 +219,15 @@
             cells.forEach(cell => {
                 cell.classList.remove('clicked')
                 cell.querySelector('.prize').textContent = ''
-                if (!cell.querySelector('.cover')) {
-                    const cover = document.createElement('div')
-                    cover.className = 'cover'
-                    cover.textContent = '?'
-                    cell.appendChild(cover)
-                } else {
-                    cell.querySelector('.cover').style.display = 'flex'
-                }
+
+
+                const oldCover = cell.querySelector('.cover')
+                if (oldCover) oldCover.remove()
+
+                const cover = document.createElement('div')
+                cover.className = 'cover'
+                cover.textContent = '?'
+                cell.appendChild(cover)
             })
             document.getElementById('retryButton').style.display = 'none'
             document.getElementById('playButton').style.display = 'block'

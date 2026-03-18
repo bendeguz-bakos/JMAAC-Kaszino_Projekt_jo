@@ -53,7 +53,7 @@
       "id": "b7c7",
       "username": "ksb",
       "password": "asdasd",
-      "balance": 205
+      "balance": 5
     },
     {
       "id": "3fbb",
@@ -64,7 +64,13 @@
       "id": "7754",
       "username": "Bendeg",
       "password": "Bende",
-      "balance": 9940504.25
+      "balance": 31344401.25
+    },
+    {
+      "id": "dc29",
+      "username": "magi",
+      "password": "bela",
+      "balance": 0
     }
   ]
 }
